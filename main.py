@@ -19,16 +19,19 @@ try:
     while True:
         # Read data from the serial port
         if ser.in_waiting > 0:
-            data = ser.readline().decode().strip()  # Decode bytes to string and remove newline characters
-        
-            # Print the received data
-            print("Received data:", data)
-        
-            # Check for specific commands and send corresponding commands to Arduino
-            if data == '/load':
-                send_command('/load\n')
-            elif data == '/wipe':
-                send_command('/wipe\n')
+            try:
+                # Decode bytes to string and remove newline characters
+                data = ser.readline().decode('utf-8', errors='replace').strip()
+                # Print the received data
+                print("Received data:", data)
+                
+                # Check for specific commands and send corresponding commands to Arduino
+                if data == '/load':
+                    send_command('/load\n')
+                elif data == '/wipe':
+                    send_command('/wipe\n')
+            except UnicodeDecodeError:
+                print("Error decoding data:", ser.readline())
 
         # Add a short delay to avoid excessive CPU usage
         time.sleep(0.1)
